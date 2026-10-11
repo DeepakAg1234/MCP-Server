@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://google-workspace-mcp.local/schemas/gdocs_append_content.json",
+  "title": "gdocs_append_content input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["document_id", "content"],
+  "properties": {
+    "document_id": { "type": "string", "minLength": 1, "maxLength": 2048 },
+    "content": { "type": "string", "minLength": 1 },
+    "account_id": { "type": "string", "pattern": "^acct_[A-Za-z0-9_-]{16,128}$" },
+    "format": { "type": "string", "enum": ["plain_text"] },
+    "prepend_newline": { "type": "boolean" },
+    "idempotency_key": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$" }
+  },
+  "examples": [
+    {
+      "document_id": "1AbCdEfGhIjKlMnOpQrSt",
+      "content": "Appended note",
+      "format": "plain_text",
+      "prepend_newline": true,
+      "idempotency_key": "doc-retry-1"
+    }
+  ],
+  "$defs": {
+    "output": {
+      "$id": "https://google-workspace-mcp.local/schemas/gdocs_append_content.output.json",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ok", "operation_id", "tool", "result", "warnings"],
+      "properties": {
+        "ok": { "const": true },
+        "operation_id": { "type": "string", "pattern": "^op_[0-9A-HJKMNP-TV-Z]{26}$" },
+        "tool": { "const": "gdocs_append_content" },
+        "warnings": { "type": "array" },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "document_id",
+            "account_id",
+            "status",
+            "start_index",
+            "end_index",
+            "base_revision_id",
+            "document_title"
+          ],
+          "properties": {
+            "document_id": { "type": "string", "pattern": "^[A-Za-z0-9_-]{10,128}$" },
+            "account_id": { "type": "string" },
+            "status": { "const": "appended" },
+            "start_index": { "type": "integer", "minimum": 0 },
+            "end_index": { "type": "integer", "minimum": 0 },
+            "base_revision_id": { "type": "string" },
+            "revision_id": { "type": "string" },
+            "document_title": { "type": "string" }
+          }
+        }
+      },
+      "examples": [
+        {
+          "ok": true,
+          "operation_id": "op_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+          "tool": "gdocs_append_content",
+          "result": {
+            "document_id": "1AbCdEfGhIjKlMnOpQrSt",
+            "account_id": "acct_AAAAAAAAAAAAAAAAAAAAAA",
+            "status": "appended",
+            "start_index": 1,
+            "end_index": 14,
+            "base_revision_id": "rev1",
+            "revision_id": "rev2",
+            "document_title": "Project log"
+          },
+          "warnings": []
+        }
+      ]
+    }
+  }
+}

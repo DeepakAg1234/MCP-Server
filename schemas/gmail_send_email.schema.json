@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://google-workspace-mcp.local/schemas/gmail_send_email.json",
+  "title": "gmail_send_email input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["subject", "body"],
+  "properties": {
+    "to": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/address" }
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 998,
+      "pattern": "^[^\\u0000-\\u001F\\u007F]+$"
+    },
+    "body": { "type": "string", "minLength": 1 },
+    "account_id": { "type": "string", "pattern": "^acct_[A-Za-z0-9_-]{16,128}$" },
+    "cc": { "type": "array", "items": { "$ref": "#/$defs/address" } },
+    "bcc": { "type": "array", "items": { "$ref": "#/$defs/address" } },
+    "body_format": { "type": "string", "enum": ["plain", "html"] },
+    "reply_to_message_id": { "type": "string", "pattern": "^[A-Za-z0-9_-]{1,128}$" },
+    "attachments": { "not": {} },
+    "idempotency_key": { "type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$" }
+  },
+  "examples": [
+    {
+      "to": ["ada@example.com"],
+      "cc": ["team@example.com"],
+      "subject": "Status update",
+      "body": "Shipped the write path.",
+      "body_format": "plain",
+      "idempotency_key": "retry-1"
+    }
+  ],
+  "$defs": {
+    "address": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 254,
+      "pattern": "^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$"
+    },
+    "output": {
+      "$id": "https://google-workspace-mcp.local/schemas/gmail_send_email.output.json",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ok", "operation_id", "tool", "result", "warnings"],
+      "properties": {
+        "ok": { "const": true },
+        "operation_id": { "type": "string", "pattern": "^op_[0-9A-HJKMNP-TV-Z]{26}$" },
+        "tool": { "const": "gmail_send_email" },
+        "warnings": { "type": "array" },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["message_id", "account_id", "status", "recipient_count"],
+          "properties": {
+            "message_id": { "type": "string", "minLength": 1 },
+            "thread_id": { "type": "string" },
+            "account_id": { "type": "string" },
+            "status": { "const": "sent" },
+            "recipient_count": { "type": "integer", "minimum": 1 }
+          }
+        }
+      },
+      "examples": [
+        {
+          "ok": true,
+          "operation_id": "op_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+          "tool": "gmail_send_email",
+          "result": {
+            "message_id": "18c0",
+            "thread_id": "18c0",
+            "account_id": "acct_AAAAAAAAAAAAAAAAAAAAAA",
+            "status": "sent",
+            "recipient_count": 1
+          },
+          "warnings": [
+            {
+              "code": "DELIVERY_NOT_GUARANTEED",
+              "message": "Gmail accepted the message for sending."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

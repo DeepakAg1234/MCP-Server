@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://google-workspace-mcp.local/schemas/error.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["code", "message", "retryable", "error_id"],
+  "properties": {
+    "code": {
+      "type": "string",
+      "enum": [
+        "INVALID_ARGUMENT",
+        "UNAUTHENTICATED",
+        "ACCOUNT_NOT_FOUND",
+        "INSUFFICIENT_SCOPE",
+        "ACCESS_DENIED",
+        "NOT_FOUND",
+        "CONFLICT",
+        "RATE_LIMITED",
+        "UPSTREAM_UNAVAILABLE",
+        "UPSTREAM_ERROR",
+        "IDEMPOTENCY_CONFLICT",
+        "INTERNAL_ERROR"
+      ]
+    },
+    "message": { "type": "string", "minLength": 1 },
+    "retryable": { "type": "boolean" },
+    "error_id": { "type": "string", "pattern": "^op_[0-9A-HJKMNP-TV-Z]{26}$" },
+    "next_action": { "type": "string" },
+    "retry_after_seconds": { "type": "integer", "minimum": 0 }
+  }
+}

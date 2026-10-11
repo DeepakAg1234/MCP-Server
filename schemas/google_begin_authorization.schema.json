@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://google-workspace-mcp.local/schemas/google_begin_authorization.json",
+  "title": "google_begin_authorization input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["capabilities"],
+  "properties": {
+    "account_id": { "type": "string", "pattern": "^acct_[A-Za-z0-9_-]{16,128}$" },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": { "type": "string", "enum": ["gmail.send", "docs.append"] }
+    }
+  },
+  "examples": [{ "capabilities": ["gmail.send", "docs.append"] }],
+  "$defs": {
+    "output": {
+      "$id": "https://google-workspace-mcp.local/schemas/google_begin_authorization.output.json",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ok", "operation_id", "tool", "result", "warnings"],
+      "properties": {
+        "ok": { "const": true },
+        "operation_id": { "type": "string", "pattern": "^op_[0-9A-HJKMNP-TV-Z]{26}$" },
+        "tool": { "const": "google_begin_authorization" },
+        "warnings": { "type": "array" },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["authorization_url", "expires_at", "status"],
+          "properties": {
+            "authorization_url": { "type": "string", "minLength": 1 },
+            "expires_at": { "type": "string", "minLength": 1 },
+            "status": { "const": "pending" }
+          }
+        }
+      },
+      "examples": [
+        {
+          "ok": true,
+          "operation_id": "op_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+          "tool": "google_begin_authorization",
+          "result": {
+            "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=example",
+            "expires_at": "2026-10-10T12:10:00.000Z",
+            "status": "pending"
+          },
+          "warnings": []
+        }
+      ]
+    }
+  }
+}

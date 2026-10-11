@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://google-workspace-mcp.local/schemas/envelope.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ok", "operation_id", "tool"],
+  "properties": {
+    "ok": { "type": "boolean" },
+    "operation_id": { "type": "string", "pattern": "^op_[0-9A-HJKMNP-TV-Z]{26}$" },
+    "tool": { "type": "string", "minLength": 1 },
+    "result": { "type": "object" },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "error": { "$ref": "https://google-workspace-mcp.local/schemas/error.json" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "ok": { "const": true } },
+        "required": ["ok"]
+      },
+      "then": { "required": ["result", "warnings"] }
+    },
+    {
+      "if": {
+        "properties": { "ok": { "const": false } },
+        "required": ["ok"]
+      },
+      "then": { "required": ["error"] }
+    }
+  ]
+}

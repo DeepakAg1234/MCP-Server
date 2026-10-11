@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://google-workspace-mcp.local/schemas/google_authorization_status.json",
+  "title": "google_authorization_status input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["capability"],
+  "properties": {
+    "account_id": { "type": "string", "pattern": "^acct_[A-Za-z0-9_-]{16,128}$" },
+    "capability": { "type": "string", "enum": ["gmail.send", "docs.append", "all"] }
+  },
+  "examples": [{ "capability": "gmail.send" }],
+  "$defs": {
+    "output": {
+      "$id": "https://google-workspace-mcp.local/schemas/google_authorization_status.output.json",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ok", "operation_id", "tool", "result", "warnings"],
+      "properties": {
+        "ok": { "const": true },
+        "operation_id": { "type": "string", "pattern": "^op_[0-9A-HJKMNP-TV-Z]{26}$" },
+        "tool": { "const": "google_authorization_status" },
+        "warnings": { "type": "array" },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["account_id", "capability", "authorized", "missing_scopes"],
+          "properties": {
+            "account_id": { "type": "string" },
+            "capability": { "enum": ["gmail.send", "docs.append", "all"] },
+            "authorized": { "type": "boolean" },
+            "missing_scopes": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      },
+      "examples": [
+        {
+          "ok": true,
+          "operation_id": "op_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+          "tool": "google_authorization_status",
+          "result": {
+            "account_id": "acct_AAAAAAAAAAAAAAAAAAAAAA",
+            "capability": "gmail.send",
+            "authorized": true,
+            "missing_scopes": []
+          },
+          "warnings": []
+        }
+      ]
+    }
+  }
+}

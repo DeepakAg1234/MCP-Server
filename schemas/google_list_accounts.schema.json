@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://google-workspace-mcp.local/schemas/google_list_accounts.json",
+  "title": "google_list_accounts input",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {},
+  "examples": [{}],
+  "$defs": {
+    "output": {
+      "$id": "https://google-workspace-mcp.local/schemas/google_list_accounts.output.json",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ok", "operation_id", "tool", "result", "warnings"],
+      "properties": {
+        "ok": { "const": true },
+        "operation_id": { "type": "string", "pattern": "^op_[0-9A-HJKMNP-TV-Z]{26}$" },
+        "tool": { "const": "google_list_accounts" },
+        "warnings": { "type": "array" },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["accounts"],
+          "properties": {
+            "accounts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["account_id", "email", "display_name", "granted_scopes", "status", "default"],
+                "properties": {
+                  "account_id": { "type": "string" },
+                  "email": { "type": "string" },
+                  "display_name": { "type": "string" },
+                  "granted_scopes": { "type": "array", "items": { "type": "string" } },
+                  "status": { "enum": ["active", "reauthorization_required"] },
+                  "default": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "examples": [
+        {
+          "ok": true,
+          "operation_id": "op_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+          "tool": "google_list_accounts",
+          "result": {
+            "accounts": [
+              {
+                "account_id": "acct_AAAAAAAAAAAAAAAAAAAAAA",
+                "email": "ada@example.com",
+                "display_name": "Ada",
+                "granted_scopes": ["https://www.googleapis.com/auth/gmail.send"],
+                "status": "active",
+                "default": true
+              }
+            ]
+          },
+          "warnings": []
+        }
+      ]
+    }
+  }
+}
